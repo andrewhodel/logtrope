@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Logtrope - realtime logs</title>
+<link type="text/css" rel="stylesheet" media="screen" href="screen.css" />
+</head>
+<body>
+
+<div id="cover">
+<p>Logtrope - realtime logs</p>
+<input type="password" id="key" />
+<br />
+<input type="button" id="login" value="login" />
+</div>
+
+        <div id="head">
+            <span style="float: left; margin-right: 40px; margin-left: 15px; font-style: italic; color: #fff; font-size:1.4em;">Logtrope</span>
+            <span style="float: right; margin-left: 10px; margin-right: 15px;"><input type="button" id="logout" value="logout" /></span>
+        </div>
+        <div id="main">
+            <div id="navigation">
+            </div>
+
+            <div id="content">
+            </div>
+        </div>
+
+
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="socket.io/socket.io.js"></script>
+<script src="jquery.epochago.js"></script>
+<script src="jquery.cookie.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>
