@@ -57,7 +57,7 @@ function doLogin(key) {
         for (var i=0; i<data.length; i++) {
             h += '<div id="host' + data[i].host + '" class="host">';
             h += '<p class="htitle"><a href="#" onclick="showLog(\'' + data[i].host + '\'); return false;">' + data[i].host + '</a> <a href="#" onclick="deleteOne(\'' + data[i].host + '\'); return false;" style="float: right;">X</a></p>';
-            h += '<p class="hstatus"><span id="hostSeverity' + data[i].host + '">' + data[i].severity + '</span> - <span id="hostEpochago' + data[i].host + '" class="epochago">' + data[i].unixts + '</span></p>';
+            h += '<p class="hstatus"><span id="hostSeverity' + data[i].host + '">' + sevColor(data[i]) + '</span> - <span id="hostEpochago' + data[i].host + '" class="epochago">' + data[i].unixts + '</span></p>';
             h += '</div>';
         }
 
@@ -75,7 +75,7 @@ function doLogin(key) {
 
         for (var i=0; i<data.length; i++) {
             h += '<div class="message">';
-            h += '<p class="mtitle">' + data[i].severity + ' - <span class="epochago">' + data[i].unixts + '</span></p>';
+            h += '<p class="mtitle">' + sevColor(data[i]) + ' - <span class="epochago">' + data[i].unixts + '</span></p>';
             h += '<p class="mcontent">' + data[i].content + '</p>';
             h += '</div>';
         }
@@ -89,7 +89,7 @@ function doLogin(key) {
 
         //console.log('got update', msg);
 
-        $('#hostSeverity' + msg.host).html(msg.severity);
+        $('#hostSeverity' + msg.host).html(sevColor(msg));
         $('#hostEpochago' + msg.host).prop('title', msg.unixts);;
 
         if (globalView == 'all' || globalView == msg.host) {
@@ -99,7 +99,7 @@ function doLogin(key) {
             if (globalView == 'all') {
                 h += '<a href="#" onclick="showLog(\'' + msg.host + '\'); return false;">' + msg.host + '</a> - ';
             }
-            h += msg.severity + ' - <span class="epochago">' + msg.unixts + '</span></p>';
+            h += sevColor(msg) + ' - <span class="epochago">' + msg.unixts + '</span></p>';
             h += '<p class="mcontent">' + msg.content + '</p>';
             h += '</div>';
             $('#contentData').prepend(h);
@@ -135,4 +135,44 @@ function deleteOne(host) {
     socket.emit('deleteOne', {
         host: host
     });
+}
+
+function sevColor(msg) {
+    var c = '#000';
+    switch(msg.severity_id) {
+        case 0:
+            // emergency
+            c = 'red';
+            break;
+        case 1:
+            // alert
+            c = 'red';
+            break;
+        case 2:
+            // critical
+            c = 'red';
+            break;
+        case 3:
+            // error
+            c = 'red';
+            break;
+        case 4:
+            // warning
+            c = 'blue';
+            break;
+        case 5:
+            // notice
+            c = 'green';
+            break;
+        case 6:
+            // informational
+            c = 'green';
+            break;
+        case 7:
+            // debug
+            c = '#000';
+            break;
+    }
+
+    return '<span style="padding: 2px; border: 2px solid '+c+'; color: '+c+';">'+msg.severity+'</span>';
 }
