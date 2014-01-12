@@ -1,4 +1,6 @@
 var socket = Object;
+var globalView = 'all';
+$('#contentTitle').html('<h2>All Hosts</h2>');
 
 if ($.cookie('logtropekey')) {
     doLogin($.cookie('logtropekey'));
@@ -50,7 +52,7 @@ function doLogin(key) {
 
         //console.log('got hosts', data);
 
-        var h = '';
+        var h = '<div class="host"><p class="htitle"><a href="#" onclick="showLog(); return false;">All</a></p><p class="hstatus">Show messages from all hosts</p></div>';
 
         for (var i=0; i<data.length; i++) {
             h += '<div id="host' + data[i].host + '" class="host">';
@@ -68,7 +70,8 @@ function doLogin(key) {
 
         //console.log('got messages', data);
 
-        var h = '<h2>'+data[0].host+'</h2>';
+        $('#contentTitle').html('<h2>'+data[0].host+'</h2>');
+        var h = '';
 
         for (var i=0; i<data.length; i++) {
             h += '<div class="message">';
@@ -77,7 +80,7 @@ function doLogin(key) {
             h += '</div>';
         }
 
-        $('#content').html(h);
+        $('#contentData').html(h);
         $('.epochago').epochago();
 
     });
@@ -87,7 +90,23 @@ function doLogin(key) {
         //console.log('got update', msg);
 
         $('#hostSeverity' + msg.host).html(msg.severity);
-        $('#hostEpochago' + msg.host).html(msg.unixts);
+        $('#hostEpochago' + msg.host).prop('title', msg.unixts);;
+
+        if (globalView == 'all' || globalView == msg.host) {
+            // add this update
+            var h = '<div class="message">';
+            h += '<p class="mtitle">';
+            if (globalView == 'all') {
+                h += '<a href="#" onclick="showLog(\'' + msg.host + '\'); return false;">' + msg.host + '</a> - ';
+            }
+            h += msg.severity + ' - <span class="epochago">' + msg.unixts + '</span></p>';
+            h += '<p class="mcontent">' + msg.content + '</p>';
+            h += '</div>';
+            $('#contentData').prepend(h);
+            if ($('#contentData').length>50) {
+                $('#contentData').last().remove();
+            }
+        }
 
         $('.epochago').epochago();
 
@@ -99,9 +118,16 @@ function doLogin(key) {
 setInterval("$('.epochago').epochago()", 30000);
 
 function showLog(host) {
-    socket.emit('showLog', {
-        host: host
-    });
+    if (typeof host === 'undefined') {
+        globalView = 'all';
+        $('#contentTitle').html('<h2>All Hosts</h2>');
+        $('#contentData').html('');
+    } else {
+        globalView = host;
+        socket.emit('showLog', {
+            host: host
+        });
+    }
 }
 
 function deleteOne(host) {
